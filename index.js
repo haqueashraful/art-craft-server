@@ -45,7 +45,21 @@ async function run() {
       res.json(result);
     });
 
-   
+    app.patch("/allArtCraft/:id", async (req, res) => {
+      const id = req.params.id;
+      const filter = { _id: new ObjectId(id) };
+      const updatedCraft = req.body;
+      const updateDocument = {
+        $set: {
+          ...updatedCraft,
+        },
+      };
+      const result = await artCraftCollection.updateOne(filter, updateDocument);
+      res.json(result);
+    });
+
+
+
 
 
     app.get('/', (req, res) => {
