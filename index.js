@@ -30,7 +30,13 @@ async function run() {
       res.json(cursor);
     });
 
-  
+    app.get("/allArtCraft/:email", async (req, res) => {
+      const email = req.params.email;
+      const query = { email: email };
+      const result = await artCraftCollection.findOne(query);
+      res.json(result);
+    });
+
 
 
     app.get('/', (req, res) => {
