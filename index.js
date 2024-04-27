@@ -25,6 +25,12 @@ async function run() {
     const db = client.db("artCraftDB");
     const artCraftCollection = db.collection("artCraftCollection");
 
+    app.get("/allArtCraft", async (req, res) => {
+      const cursor = await artCraftCollection.find().toArray();
+      res.json(cursor);
+    });
+
+  
 
 
     app.get('/', (req, res) => {
