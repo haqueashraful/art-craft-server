@@ -38,6 +38,15 @@ async function run() {
     });
 
 
+    
+    app.post("/allArtCraft", async (req, res) => {
+      const Craft = req.body;
+      const result = await artCraftCollection.insertOne(Craft);
+      res.json(result);
+    });
+
+   
+
 
     app.get('/', (req, res) => {
       res.send('Hello World!')
