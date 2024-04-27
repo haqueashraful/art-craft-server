@@ -37,7 +37,17 @@ async function run() {
       res.json(result);
     });
 
-
+    app.get('/allArtCraft/:subcatagory_name', async (req, res) => {
+      const subcatagory_name = req.params.subcatagory_name;
+      const query = { subcatagory_name: subcatagory_name };
+      try {
+        const result = await artCraftCollection.find(query).toArray();
+        res.json(result);
+      } catch (error) {
+        console.error("An error occurred:", error);
+        res.status(500).json({ error: "Internal Server Error" });
+      }
+    });
     
     app.post("/allArtCraft", async (req, res) => {
       const Craft = req.body;
