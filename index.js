@@ -32,6 +32,12 @@ async function run() {
 
     const db = client.db("artCraftDB");
     const artCraftCollection = db.collection("artCraftCollection");
+    const subCategoryCollection = db.collection("subCategoryCollection");
+    
+    app.get("/subCategory", async (req, res) => {
+      const cursor = await subCategoryCollection.find().toArray();
+      res.json(cursor);
+    })
 
     app.get("/allArtCraft", async (req, res) => {
       try {
@@ -43,52 +49,31 @@ async function run() {
       }
     });
 
-    app.get("/allArtCraft/id/:id", async (req, res) => {
+
+    app.get("/allArtCraft/:queryType/:queryValue", async (req, res) => {
       try {
-        const id = req.params.id;
-        console.log("Fetching item by ID:", id);
-        const query = { _id: new ObjectId(id) };
-        const result = await artCraftCollection.findOne(query);
-        res.send(result);
+        const { queryType, queryValue } = req.params;
+        let query;
+        if (queryType === "id") {
+          query = { _id: new ObjectId(queryValue) };
+          const result = await artCraftCollection.findOne(query); 
+          return res.json(result); 
+        } else if (queryType === "userEmail") {
+          query = { userEmail: queryValue };
+          const result = await artCraftCollection.find(query).toArray();
+          res.json(result);
+        } else if(queryType === "subcategoryName") {
+          query = { subcategoryName: queryValue };
+          const result = await artCraftCollection.find(query).toArray();
+          res.json(result);
+        }else {
+          return res.status(400).json({ error: "Invalid query type" });
+        }
       } catch (error) {
-        console.error("Error fetching art & craft item by ID:", error);
+        console.error("Error fetching art & craft items:", error);
         res.status(500).json({ error: "Internal server error" });
       }
     });
-
-    app.get("/allArtCraft/userEmail/:userEmail", async (req, res) => {
-      try {
-        const userEmail = req.params.userEmail;
-        const query = { userEmail: userEmail };
-        const result = await artCraftCollection.find(query).toArray();
-        res.json(result);
-      } catch (error) {
-        console.error("Error fetching art & craft items by user email:", error);
-        res.status(500).json({ error: "Internal server error" });
-      }
-    });
-
-    // app.get('/allArtCraft/:queryType/:queryValue', async (req, res) => {
-    //   try {
-    //     const { queryType, queryValue } = req.params;
-    //     let query;
-    //     if (queryType === 'id') {
-    //       query = { _id: new ObjectId(queryValue) };
-    //       const result = await artCraftCollection.findOne(query); // Use findOne for ID query
-    //       return res.json(result); // Return directly without converting to array
-    //     } else if (queryType === 'userEmail') {
-    //       query = { userEmail: queryValue };
-    //     } else {
-    //       return res.status(400).json({ error: "Invalid query type" });
-    //     }
-
-    //     const result = await artCraftCollection.find(query).toArray();
-    //     res.json(result);
-    //   } catch (error) {
-    //     console.error("Error fetching art & craft items:", error);
-    //     res.status(500).json({ error: "Internal server error" });
-    //   }
-    // });
 
     app.post("/allArtCraft", async (req, res) => {
       const Craft = req.body;
@@ -115,6 +100,10 @@ async function run() {
       const result = await artCraftCollection.deleteOne(filter);
       res.json(result);
     });
+
+
+
+
     app.get("/", (req, res) => {
       res.send("Hello World!");
     });
